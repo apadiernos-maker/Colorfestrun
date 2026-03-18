@@ -157,6 +157,12 @@
 <div class="gate" id="gate">
   <div class="gate-icon">🔒</div>
   <div class="gate-title">Members Only</div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+    <div style="flex:1;height:6px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;">
+      <div id="gateFill" style="height:100%;background:linear-gradient(90deg,#3DFFD6,#F5C842);border-radius:99px;width:0%;transition:width .6s cubic-bezier(.4,0,.2,1);"></div>
+    </div>
+    <div id="gateSlotLabel" style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:#F5C842;white-space:nowrap;letter-spacing:1px;">Loading…</div>
+  </div>
   <div class="gate-sub">Enter the secret password to access the sign-up form.</div>
   <div class="gate-row">
     <input class="gate-input" id="pwInput" type="password" placeholder="Enter password" maxlength="30"/>
@@ -201,6 +207,11 @@
 
   function render(list) {
     const n = list.length, isFull = n >= MAX;
+    // Update gate slot counter
+    const gf = document.getElementById('gateFill');
+    const gl = document.getElementById('gateSlotLabel');
+    if (gf) gf.style.width = `${(n/MAX)*100}%`;
+    if (gl) gl.textContent = isFull ? 'FULL' : `${MAX-n} slot${MAX-n!==1?'s':''} left`;
     document.getElementById('fill').style.width = `${(n/MAX)*100}%`;
     document.getElementById('slotLabel').textContent = isFull ? 'FULL' : `${MAX-n} slot${MAX-n!==1?'s':''} left`;
     document.getElementById('rosterCount').textContent = `${n} / ${MAX}`;
@@ -259,7 +270,6 @@
     if (val === 'agility') {
       document.getElementById('gate').style.display = 'none';
       document.getElementById('signupPanel').style.display = 'block';
-      load();
     } else {
       const err = document.getElementById('gateErr');
       err.textContent = 'Incorrect password. Try again.';
@@ -268,7 +278,7 @@
     }
   }
 
-  // load() is called after password is verified
+  load(); // load immediately to show slot counter on gate screen
   db.channel('signups-channel')
     .on('postgres_changes',{event:'*',schema:'public',table:'signups'},load)
     .subscribe();
