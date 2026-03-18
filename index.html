@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PUIC ColorFest Carnival Run 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --navy:#0A1628; --gold:#F5C842; --coral:#FF5F3D; --mint:#3DFFD6; --white:#FFFFFF; }
+
+  body {
+    background: #06101e;
+    display: flex; flex-direction: column; align-items: center;
+    min-height: 100vh; font-family: 'Syne', sans-serif;
+    padding-bottom: 60px; overflow-x: hidden;
+  }
+
+  /* ── POSTER ── */
+  .poster { width: 100%; max-width: 700px; background: var(--navy); position: relative; overflow: hidden; }
+
+  .color-strip {
+    position: absolute; top: 0; left: 0; right: 0; height: 6px;
+    background: linear-gradient(90deg, var(--coral), var(--gold), var(--mint), var(--coral));
+    background-size: 200%; animation: shimmer 4s linear infinite;
+  }
+  .bg-dots {
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .glow1 {
+    position: absolute; width: 520px; height: 520px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(245,200,66,0.18) 0%, transparent 70%);
+    top: -120px; right: -140px; animation: pulse 5s ease-in-out infinite;
+  }
+  .glow2 {
+    position: absolute; width: 360px; height: 360px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,95,61,0.14) 0%, transparent 70%);
+    bottom: 80px; left: -100px; animation: pulse 7s ease-in-out infinite reverse;
+  }
+  .confetti-dot { position: absolute; border-radius: 50%; animation: floatUp linear infinite; opacity: 0; }
+
+  @keyframes shimmer   { 0%{background-position:0%} 100%{background-position:200%} }
+  @keyframes pulse     { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+  @keyframes fadeUp    { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes slideIn   { from{opacity:0;transform:translateX(-14px)} to{opacity:1;transform:translateX(0)} }
+  @keyframes floatUp   { 0%{transform:translateY(0) rotate(0deg);opacity:0} 10%{opacity:.5} 90%{opacity:.2} 100%{transform:translateY(-650px) rotate(360deg);opacity:0} }
+
+  .pcontent {
+    position: relative; z-index: 10;
+    padding: clamp(24px,5vw,48px) clamp(20px,6vw,52px) 44px;
+    display: flex; flex-direction: column;
+  }
+
+  .header-bar { display:flex; align-items:center; justify-content:space-between; margin-bottom:32px; animation:fadeUp .6s ease both; }
+  .puic-badge {
+    background: var(--gold); color: var(--navy);
+    font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:2px;
+    padding:8px 18px;
+    clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%);
+  }
+  .org-tag { color:rgba(255,255,255,.45); font-size:11px; letter-spacing:3px; text-transform:uppercase; font-family:'DM Sans',sans-serif; }
+
+  .eyebrow { font-family:'DM Sans',sans-serif; font-style:italic; font-size:14px; letter-spacing:4px; color:var(--mint); text-transform:uppercase; margin-bottom:10px; animation:fadeUp .7s .1s ease both; }
+
+  .headline { font-family:'Bebas Neue',sans-serif; font-size:clamp(56px,13vw,96px); line-height:.88; color:#fff; animation:fadeUp .7s .2s ease both; }
+  .stroke { -webkit-text-stroke:2px #fff; color:transparent; }
+  .accent { color:var(--gold); }
+
+  .sub { margin-top:20px; font-size:16px; color:rgba(255,255,255,.70); line-height:1.55; max-width:480px; font-family:'DM Sans',sans-serif; animation:fadeUp .7s .3s ease both; }
+  .sub strong { color:#fff; font-weight:700; }
+
+  .divider { width:60px; height:3px; background:var(--coral); margin:28px 0; animation:fadeUp .6s .35s ease both; }
+
+  .event-card { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.10); border-radius:16px; padding:24px 28px; display:flex; gap:28px; align-items:center; animation:fadeUp .7s .4s ease both; }
+  .event-icon { font-size:46px; line-height:1; flex-shrink:0; }
+  .event-label { font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--coral); font-family:'DM Sans',sans-serif; margin-bottom:4px; }
+  .event-name { font-family:'Bebas Neue',sans-serif; font-size:28px; color:#fff; letter-spacing:1px; line-height:1.1; }
+  .event-meta { margin-top:6px; font-size:13px; color:rgba(255,255,255,.55); font-family:'DM Sans',sans-serif; }
+  .event-meta span { color:var(--gold); font-weight:700; }
+
+  .perks-label { font-size:10px; letter-spacing:3px; text-transform:uppercase; color:rgba(255,255,255,.35); font-family:'DM Sans',sans-serif; margin:30px 0 14px; }
+  .perks-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .perk { display:flex; align-items:flex-start; gap:12px; background:rgba(255,255,255,.04); border-radius:10px; padding:14px 16px; border:1px solid rgba(255,255,255,.07); transition:border-color .3s,background .3s; cursor:default; }
+  .perk:hover { background:rgba(245,200,66,.07); border-color:rgba(245,200,66,.28); }
+  .perk-icon { font-size:22px; flex-shrink:0; margin-top:1px; }
+  .perk-title { font-size:13px; font-weight:800; color:#fff; line-height:1.2; }
+  .perk-desc { font-size:11px; color:rgba(255,255,255,.45); font-family:'DM Sans',sans-serif; margin-top:2px; line-height:1.4; }
+
+  .slots-banner {
+    margin-top:26px; background:linear-gradient(135deg,var(--coral),#c93a1f);
+    border-radius:14px; padding:22px 28px; display:flex; align-items:center; justify-content:space-between;
+    box-shadow:0 8px 32px rgba(255,95,61,.35); position:relative; overflow:hidden;
+  }
+  .slots-banner::before { content:''; position:absolute; width:200px; height:200px; border-radius:50%; background:rgba(255,255,255,.07); top:-80px; right:-40px; }
+  .slots-big { position:absolute; right:28px; top:50%; transform:translateY(-50%); font-family:'Bebas Neue',sans-serif; font-size:88px; color:#fff; opacity:.18; line-height:1; pointer-events:none; }
+  .slots-eyebrow { font-size:10px; letter-spacing:3px; text-transform:uppercase; color:rgba(255,255,255,.65); font-family:'DM Sans',sans-serif; margin-bottom:4px; }
+  .slots-headline { font-family:'Bebas Neue',sans-serif; font-size:34px; color:#fff; letter-spacing:1px; line-height:1; }
+  .slots-note { font-size:12px; color:rgba(255,255,255,.65); font-family:'DM Sans',sans-serif; margin-top:4px; }
+  .free-badge { background:var(--gold); color:var(--navy); font-family:'Bebas Neue',sans-serif; font-size:15px; letter-spacing:2px; padding:6px 16px; border-radius:30px; white-space:nowrap; position:relative; z-index:2; flex-shrink:0; }
+
+  .poster-footer { margin-top:30px; padding-top:20px; border-top:1px solid rgba(255,255,255,.08); display:flex; align-items:center; justify-content:space-between; }
+  .cause { display:flex; align-items:center; gap:10px; }
+  .cause-dot { width:8px; height:8px; border-radius:50%; background:var(--mint); flex-shrink:0; animation:pulse 2s infinite; }
+  .cause-text { font-size:11px; color:rgba(255,255,255,.40); font-family:'DM Sans',sans-serif; font-style:italic; }
+  .cause-text strong { color:var(--mint); font-style:normal; }
+  .footer-date { font-family:'Bebas Neue',sans-serif; font-size:14px; letter-spacing:2px; color:rgba(255,255,255,.25); }
+
+  /* ── SIGNUP PANEL ── */
+  .signup-panel { width:100%; max-width:700px; background:#0e1f38; border-top:3px solid var(--gold); padding:36px clamp(20px,6vw,52px) 48px; }
+
+  .signup-title { font-family:'Bebas Neue',sans-serif; font-size:36px; letter-spacing:2px; color:#fff; margin-bottom:4px; }
+  .signup-sub { font-family:'DM Sans',sans-serif; font-size:13px; color:rgba(255,255,255,.4); margin-bottom:24px; }
+
+  .progress-row { display:flex; align-items:center; margin-bottom:20px; }
+  .progress-track { flex:1; height:6px; background:rgba(255,255,255,.08); border-radius:99px; overflow:hidden; margin-right:16px; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--mint),var(--gold)); border-radius:99px; transition:width .6s cubic-bezier(.4,0,.2,1); }
+  .progress-label { font-family:'Bebas Neue',sans-serif; font-size:18px; color:var(--gold); white-space:nowrap; letter-spacing:1px; }
+
+  .full-banner { background:rgba(245,200,66,.1); border:1px solid rgba(245,200,66,.3); border-radius:10px; padding:14px 18px; margin-bottom:16px; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--gold); text-align:center; display:none; }
+
+  .form-row { display:flex; gap:12px; margin-bottom:10px; }
+  .name-input {
+    flex:1; background:rgba(255,255,255,.06); border:1.5px solid rgba(255,255,255,.12);
+    border-radius:10px; padding:14px 18px; font-family:'DM Sans',sans-serif; font-size:15px;
+    color:#fff; outline:none; transition:border-color .2s,background .2s;
+  }
+  .name-input::placeholder { color:rgba(255,255,255,.25); }
+  .name-input:focus { border-color:var(--gold); background:rgba(245,200,66,.05); }
+  .name-input:disabled { opacity:.4; cursor:not-allowed; }
+
+  .submit-btn {
+    background:var(--coral); color:#fff; font-family:'Bebas Neue',sans-serif;
+    font-size:20px; letter-spacing:2px; padding:14px 32px; border-radius:10px;
+    border:none; cursor:pointer; white-space:nowrap;
+    box-shadow:0 4px 20px rgba(255,95,61,.4);
+    transition:transform .2s, box-shadow .2s, background .2s;
+  }
+  .submit-btn:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 8px 28px rgba(255,95,61,.55); }
+  .submit-btn:disabled { background:rgba(255,255,255,.10); color:rgba(255,255,255,.28); cursor:not-allowed; box-shadow:none; }
+
+  .msg { font-family:'DM Sans',sans-serif; font-size:13px; margin-bottom:14px; min-height:18px; }
+  .msg.success { color:var(--mint); }
+  .msg.error   { color:var(--coral); }
+
+  .roster-header { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .roster-title { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:2px; color:#fff; }
+  .roster-badge { background:var(--gold); color:var(--navy); font-family:'Bebas Neue',sans-serif; font-size:14px; padding:2px 10px; border-radius:20px; }
+
+  .roster-list { display:flex; flex-direction:column; gap:8px; }
+  .roster-item { display:flex; align-items:center; gap:14px; background:rgba(255,255,255,.04); border-radius:10px; padding:12px 16px; border:1px solid rgba(255,255,255,.06); animation:slideIn .35s ease both; }
+  .roster-num { font-family:'Bebas Neue',sans-serif; font-size:22px; color:var(--gold); width:28px; text-align:center; flex-shrink:0; }
+  .roster-name { font-size:15px; font-weight:700; color:#fff; flex:1; }
+  .roster-time { font-size:11px; color:rgba(255,255,255,.3); font-family:'DM Sans',sans-serif; }
+  .roster-empty { text-align:center; padding:28px; font-family:'DM Sans',sans-serif; font-size:14px; color:rgba(255,255,255,.25); font-style:italic; border:1px dashed rgba(255,255,255,.10); border-radius:10px; }
+</style>
+</head>
+<body>
+
+<!-- ── POSTER ── -->
+<div class="poster">
+  <div class="color-strip"></div>
+  <div class="bg-dots"></div>
+  <div class="glow1"></div>
+  <div class="glow2"></div>
+  <div class="confetti-dot" style="width:8px;height:8px;background:#F5C842;bottom:0;left:15%;animation-duration:9s;animation-delay:0s;"></div>
+  <div class="confetti-dot" style="width:6px;height:6px;background:#FF5F3D;bottom:0;left:35%;animation-duration:11s;animation-delay:2s;"></div>
+  <div class="confetti-dot" style="width:5px;height:5px;background:#3DFFD6;bottom:0;left:60%;animation-duration:8s;animation-delay:4s;"></div>
+  <div class="confetti-dot" style="width:7px;height:7px;background:#F5C842;bottom:0;left:80%;animation-duration:10s;animation-delay:1s;"></div>
+  <div class="confetti-dot" style="width:5px;height:5px;background:#FF5F3D;bottom:0;left:50%;animation-duration:12s;animation-delay:3s;"></div>
+
+  <div class="pcontent">
+    <div class="header-bar">
+      <div class="puic-badge">PUIC</div>
+      <div class="org-tag">Pacific Union Insurance Company</div>
+    </div>
+    <div class="eyebrow">— Join the movement —</div>
+    <div class="headline">
+      <span class="stroke">Run</span><br>
+      <span class="accent">With</span><br>
+      <span>Us.</span>
+    </div>
+    <p class="sub">PUIC is signing up for the <strong>JCI Manila ColorFest Carnival Run 2026</strong> — and we want YOU with us. Lace up, show your colors, and run for a cause that truly matters: <strong>Mental Health Awareness.</strong> Slots are on the company — grab yours before they're gone.</p>
+    <div class="divider"></div>
+    <div class="event-card">
+      <div class="event-icon">🎪</div>
+      <div>
+        <div class="event-label">The Event</div>
+        <div class="event-name">JCI Manila ColorFest<br>Carnival Series 2026</div>
+        <div class="event-meta"><span>May 31, 2026</span> &nbsp;·&nbsp; Mall of Asia Grounds &nbsp;·&nbsp; Beneficiary: PMHA</div>
+      </div>
+    </div>
+    <div class="perks-label">Why Join the PUIC Team</div>
+    <div class="perks-grid">
+      <div class="perk"><div class="perk-icon">🎽</div><div><div class="perk-title">Team Merch</div><div class="perk-desc">Race with PUIC pride — matching colors, one crew</div></div></div>
+      <div class="perk"><div class="perk-icon">🧠</div><div><div class="perk-title">Real Impact</div><div class="perk-desc">Every step supports the Philippine Mental Health Association</div></div></div>
+      <div class="perk"><div class="perk-icon">🤝</div><div><div class="perk-title">Team Bonding</div><div class="perk-desc">Build connections beyond the office — fun, fitness & purpose</div></div></div>
+      <div class="perk"><div class="perk-icon">🎉</div><div><div class="perk-title">Carnival Vibes</div><div class="perk-desc">Largest lifestyle carnival + color run in the country</div></div></div>
+    </div>
+    <div class="slots-banner">
+      <div class="slots-big">10</div>
+      <div style="position:relative;z-index:1;">
+        <div class="slots-eyebrow">Limited Slots Available</div>
+        <div class="slots-headline">First 10 Sign-Ups Only</div>
+        <div class="slots-note">Registration & race fees fully covered by PUIC 🎉</div>
+      </div>
+      <div class="free-badge">ON US</div>
+    </div>
+    <div class="poster-footer">
+      <div class="cause">
+        <div class="cause-dot"></div>
+        <div class="cause-text">Running for <strong>Mental Health</strong> · In partnership with PMHA</div>
+      </div>
+      <div class="footer-date">MAY 31 · MOA GROUNDS</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SIGNUP PANEL ── -->
+<div class="signup-panel">
+  <div class="signup-title">🏃 Secure Your Slot</div>
+  <div class="signup-sub">Enter your full name below. The sign-up list is visible to all staff with this link.</div>
+
+  <div class="progress-row">
+    <div class="progress-track"><div class="progress-fill" id="fill" style="width:0%"></div></div>
+    <div class="progress-label" id="slotLabel">Loading…</div>
+  </div>
+
+  <div class="full-banner" id="fullBanner">🎉 All 10 slots have been filled! The PUIC ColorFest team is complete.</div>
+
+  <div class="form-row">
+    <input class="name-input" id="nameInput" type="text" placeholder="Enter your full name (e.g. Juan dela Cruz)" maxlength="80"/>
+    <button class="submit-btn" id="submitBtn" onclick="handleSignup()">Sign Me Up</button>
+  </div>
+  <div class="msg" id="msg"></div>
+
+  <div class="roster-header">
+    <div class="roster-title">Our Runners</div>
+    <div class="roster-badge" id="rosterCount">— / 10</div>
+  </div>
+  <div class="roster-list" id="rosterList">
+    <div class="roster-empty">Loading sign-ups…</div>
+  </div>
+</div>
+
+<script>
+  const SUPABASE_URL  = 'https://xipzqjqjnufohxqjkxyl.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhpcHpxanFqbnVmb2h4cWpreHlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4NTYzOTQsImV4cCI6MjA4OTQzMjM5NH0.r1cAIFedQHwFLFNHEE6hudoLWMV3TkCaXF7n0ietLjA';
+  const MAX = 10;
+
+  const { createClient } = supabase;
+  const db = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  function fmt(ts) {
+    const d = new Date(ts);
+    return d.toLocaleDateString('en-PH',{month:'short',day:'numeric'}) +
+           ' · ' + d.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'});
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function render(list) {
+    const n = list.length;
+    const isFull = n >= MAX;
+    document.getElementById('fill').style.width = `${(n/MAX)*100}%`;
+    document.getElementById('slotLabel').textContent = isFull ? 'FULL' : `${MAX-n} slot${MAX-n!==1?'s':''} left`;
+    document.getElementById('rosterCount').textContent = `${n} / ${MAX}`;
+    document.getElementById('fullBanner').style.display = isFull ? 'block' : 'none';
+    document.getElementById('submitBtn').disabled = isFull;
+    document.getElementById('nameInput').disabled  = isFull;
+
+    const el = document.getElementById('rosterList');
+    if (!list.length) {
+      el.innerHTML = '<div class="roster-empty">No sign-ups yet — be the first! 👟</div>';
+      return;
+    }
+    el.innerHTML = list.map((s,i) => `
+      <div class="roster-item" style="animation-delay:${i*.05}s">
+        <div class="roster-num">${i+1}</div>
+        <div class="roster-name">${esc(s.name)}</div>
+        <div class="roster-time">${fmt(s.created_at)}</div>
+      </div>`).join('');
+  }
+
+  function showMsg(text, type) {
+    const el = document.getElementById('msg');
+    el.textContent = text; el.className = 'msg ' + type;
+    if (type === 'success') setTimeout(()=>{ el.textContent=''; el.className='msg'; }, 4500);
+  }
+
+  async function load() {
+    const { data, error } = await db
+      .from('signups')
+      .select('*')
+      .order('created_at', { ascending: true });
+    if (!error) render(data || []);
+  }
+
+  async function handleSignup() {
+    const input   = document.getElementById('nameInput');
+    const trimmed = input.value.trim();
+    if (!trimmed || trimmed.length < 2) { showMsg('Please enter your full name.', 'error'); return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true; btn.textContent = 'Saving…';
+
+    try {
+      // Check current count
+      const { data: existing } = await db.from('signups').select('*').order('created_at',{ascending:true});
+      if (existing.length >= MAX) { showMsg('Sorry, all 10 slots are already taken!','error'); render(existing); return; }
+      if (existing.some(s => s.name.toLowerCase() === trimmed.toLowerCase())) {
+        showMsg(`"${esc(trimmed)}" is already on the list!`, 'error'); return;
+      }
+      const { error } = await db.from('signups').insert([{ name: trimmed }]);
+      if (error) throw error;
+      input.value = '';
+      showMsg(`🎉 You're in, ${esc(trimmed.split(' ')[0])}! See you at the starting line.`, 'success');
+      await load();
+    } catch(e) {
+      showMsg('Something went wrong. Please try again.', 'error');
+    } finally {
+      btn.textContent = 'Sign Me Up';
+      btn.disabled = false;
+    }
+  }
+
+  document.getElementById('nameInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleSignup();
+  });
+
+  // Initial load + real-time updates
+  load();
+  db.channel('signups-channel')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'signups' }, load)
+    .subscribe();
+</script>
+</body>
+</html>
