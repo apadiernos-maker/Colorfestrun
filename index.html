@@ -86,6 +86,19 @@
   .roster-name { font-size:15px; font-weight:700; color:#fff; flex:1; }
   .roster-time { font-size:11px; color:rgba(255,255,255,.3); font-family:'DM Sans',sans-serif; }
   .roster-empty { text-align:center; padding:28px; font-family:'DM Sans',sans-serif; font-size:14px; color:rgba(255,255,255,.25); font-style:italic; border:1px dashed rgba(255,255,255,.10); border-radius:10px; }
+
+  /* ── PASSWORD GATE ── */
+  .gate { width:100%; max-width:700px; background:#0e1f38; border-top:3px solid var(--gold); padding:36px clamp(20px,6vw,52px) 48px; display:flex; flex-direction:column; align-items:center; text-align:center; }
+  .gate-icon { font-size:48px; margin-bottom:16px; }
+  .gate-title { font-family:'Bebas Neue',sans-serif; font-size:32px; letter-spacing:2px; color:#fff; margin-bottom:8px; }
+  .gate-sub { font-family:'DM Sans',sans-serif; font-size:13px; color:rgba(255,255,255,.4); margin-bottom:28px; }
+  .gate-row { display:flex; gap:12px; width:100%; max-width:420px; }
+  .gate-input { flex:1; background:rgba(255,255,255,.06); border:1.5px solid rgba(255,255,255,.12); border-radius:10px; padding:14px 18px; font-family:'DM Sans',sans-serif; font-size:15px; color:#fff; outline:none; transition:border-color .2s; text-align:center; letter-spacing:3px; }
+  .gate-input::placeholder { color:rgba(255,255,255,.25); letter-spacing:0; }
+  .gate-input:focus { border-color:var(--gold); background:rgba(245,200,66,.05); }
+  .gate-btn { background:var(--gold); color:var(--navy); font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:2px; padding:14px 28px; border-radius:10px; border:none; cursor:pointer; transition:transform .2s,box-shadow .2s; box-shadow:0 4px 20px rgba(245,200,66,.3); white-space:nowrap; }
+  .gate-btn:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(245,200,66,.45); }
+  .gate-err { font-family:'DM Sans',sans-serif; font-size:13px; color:var(--coral); margin-top:12px; min-height:18px; }
 </style>
 </head>
 <body>
@@ -140,7 +153,19 @@
   </div>
 </div>
 
-<div class="signup-panel">
+<!-- ── PASSWORD GATE ── -->
+<div class="gate" id="gate">
+  <div class="gate-icon">🔒</div>
+  <div class="gate-title">Members Only</div>
+  <div class="gate-sub">Enter the secret password to access the sign-up form.</div>
+  <div class="gate-row">
+    <input class="gate-input" id="pwInput" type="password" placeholder="Enter password" maxlength="30"/>
+    <button class="gate-btn" onclick="checkPassword()">Enter</button>
+  </div>
+  <div class="gate-err" id="gateErr"></div>
+</div>
+
+<div class="signup-panel" id="signupPanel" style="display:none;">
   <div class="signup-title">🏃 Secure Your Slot</div>
   <div class="signup-sub">Enter your full name below. The sign-up list is visible to all staff with this link.</div>
   <div class="progress-row">
@@ -227,8 +252,23 @@
   }
 
   document.getElementById('nameInput').addEventListener('keydown', e => { if(e.key==='Enter') handleSignup(); });
+  document.getElementById('pwInput').addEventListener('keydown', e => { if(e.key==='Enter') checkPassword(); });
 
-  load();
+  function checkPassword() {
+    const val = document.getElementById('pwInput').value.trim().toLowerCase();
+    if (val === 'agility') {
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('signupPanel').style.display = 'block';
+      load();
+    } else {
+      const err = document.getElementById('gateErr');
+      err.textContent = 'Incorrect password. Try again.';
+      document.getElementById('pwInput').value = '';
+      setTimeout(() => { err.textContent = ''; }, 3000);
+    }
+  }
+
+  // load() is called after password is verified
   db.channel('signups-channel')
     .on('postgres_changes',{event:'*',schema:'public',table:'signups'},load)
     .subscribe();
