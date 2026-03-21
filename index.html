@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -87,19 +88,20 @@
   .roster-time { font-size:11px; color:rgba(255,255,255,.3); font-family:'DM Sans',sans-serif; }
   .roster-empty { text-align:center; padding:28px; font-family:'DM Sans',sans-serif; font-size:14px; color:rgba(255,255,255,.25); font-style:italic; border:1px dashed rgba(255,255,255,.10); border-radius:10px; }
 
-  /* ── PASSWORD GATE ── */
-  .gate { width:100%; max-width:700px; background:#0e1f38; border-top:3px solid var(--gold); padding:36px clamp(20px,6vw,52px) 48px; display:flex; flex-direction:column; align-items:center; text-align:center; }
-  .gate-icon { font-size:48px; margin-bottom:16px; }
-  .gate-title { font-family:'Bebas Neue',sans-serif; font-size:32px; letter-spacing:2px; color:#fff; margin-bottom:8px; }
-  .gate-sub { font-family:'DM Sans',sans-serif; font-size:13px; color:rgba(255,255,255,.4); margin-bottom:28px; }
-  .gate-row { display:flex; gap:12px; width:100%; max-width:420px; }
-  .gate-input { flex:1; background:rgba(255,255,255,.06); border:1.5px solid rgba(255,255,255,.12); border-radius:10px; padding:14px 18px; font-family:'DM Sans',sans-serif; font-size:15px; color:#fff; outline:none; transition:border-color .2s; text-align:center; letter-spacing:3px; }
-  .gate-input::placeholder { color:rgba(255,255,255,.25); letter-spacing:0; }
-  .gate-input:focus { border-color:var(--gold); background:rgba(245,200,66,.05); }
-  .gate-btn { background:var(--gold); color:var(--navy); font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:2px; padding:14px 28px; border-radius:10px; border:none; cursor:pointer; transition:transform .2s,box-shadow .2s; box-shadow:0 4px 20px rgba(245,200,66,.3); white-space:nowrap; }
-  .gate-btn:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(245,200,66,.45); }
-  .gate-err { font-family:'DM Sans',sans-serif; font-size:13px; color:var(--coral); margin-top:12px; min-height:18px; }
+/* ── PASSWORD GATE ── */
+.gate { width:100%; max-width:700px; background:#0e1f38; border-top:3px solid var(–gold); padding:36px clamp(20px,6vw,52px) 48px; display:flex; flex-direction:column; align-items:center; text-align:center; }
+.gate-icon { font-size:48px; margin-bottom:16px; }
+.gate-title { font-family:‘Bebas Neue’,sans-serif; font-size:32px; letter-spacing:2px; color:#fff; margin-bottom:8px; }
+.gate-sub { font-family:‘DM Sans’,sans-serif; font-size:13px; color:rgba(255,255,255,.4); margin-bottom:28px; }
+.gate-row { display:flex; gap:12px; width:100%; max-width:420px; }
+.gate-input { flex:1; background:rgba(255,255,255,.06); border:1.5px solid rgba(255,255,255,.12); border-radius:10px; padding:14px 18px; font-family:‘DM Sans’,sans-serif; font-size:15px; color:#fff; outline:none; transition:border-color .2s; text-align:center; letter-spacing:3px; }
+.gate-input::placeholder { color:rgba(255,255,255,.25); letter-spacing:0; }
+.gate-input:focus { border-color:var(–gold); background:rgba(245,200,66,.05); }
+.gate-btn { background:var(–gold); color:var(–navy); font-family:‘Bebas Neue’,sans-serif; font-size:20px; letter-spacing:2px; padding:14px 28px; border-radius:10px; border:none; cursor:pointer; transition:transform .2s,box-shadow .2s; box-shadow:0 4px 20px rgba(245,200,66,.3); white-space:nowrap; }
+.gate-btn:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(245,200,66,.45); }
+.gate-err { font-family:‘DM Sans’,sans-serif; font-size:13px; color:var(–coral); margin-top:12px; min-height:18px; }
 </style>
+
 </head>
 <body>
 
@@ -138,10 +140,10 @@
       <div class="perk"><div class="perk-icon">🎉</div><div><div class="perk-title">Carnival Vibes</div><div class="perk-desc">Largest lifestyle carnival + color run in the country</div></div></div>
     </div>
     <div class="slots-banner">
-      <div class="slots-big">10</div>
+      <div class="slots-big">20</div>
       <div style="position:relative;z-index:1;">
         <div class="slots-eyebrow">Limited Slots Available</div>
-        <div class="slots-headline">First 10 Sign-Ups Only</div>
+        <div class="slots-headline">First 20 Sign-Ups Only</div>
         <div class="slots-note">Registration & race fees fully covered by PUIC 🎉</div>
       </div>
       <div class="free-badge">ON US</div>
@@ -154,6 +156,7 @@
 </div>
 
 <!-- ── PASSWORD GATE ── -->
+
 <div class="gate" id="gate">
   <div class="gate-icon">🔒</div>
   <div class="gate-title">Members Only</div>
@@ -178,7 +181,7 @@
     <div class="progress-track"><div class="progress-fill" id="fill" style="width:0%"></div></div>
     <div class="progress-label" id="slotLabel">Loading…</div>
   </div>
-  <div class="full-banner" id="fullBanner">🎉 All 10 slots have been filled! The PUIC ColorFest team is complete.</div>
+  <div class="full-banner" id="fullBanner">🎉 All 20 slots have been filled! The PUIC ColorFest team is complete.</div>
   <div class="form-row">
     <input class="name-input" id="nameInput" type="text" placeholder="Enter your full name (e.g. Juan dela Cruz)" maxlength="80"/>
     <button class="submit-btn" id="submitBtn" onclick="handleSignup()">Sign Me Up</button>
@@ -186,7 +189,7 @@
   <div class="msg" id="msg"></div>
   <div class="roster-header">
     <div class="roster-title">Our Runners</div>
-    <div class="roster-badge" id="rosterCount">— / 10</div>
+    <div class="roster-badge" id="rosterCount">— / 20</div>
   </div>
   <div class="roster-list" id="rosterList"><div class="roster-empty">Loading sign-ups…</div></div>
 </div>
@@ -194,7 +197,7 @@
 <script>
   const SUPABASE_URL  = 'https://xipzqjqjnufohxqjkxyl.supabase.co';
   const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhpcHpxanFqbnVmb2h4cWpreHlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4NTYzOTQsImV4cCI6MjA4OTQzMjM5NH0.r1cAIFedQHwFLFNHEE6hudoLWMV3TkCaXF7n0ietLjA';
-  const MAX = 10;
+  const MAX = 20;
 
   const { createClient } = supabase;
   const db = createClient(SUPABASE_URL, SUPABASE_ANON);
@@ -211,9 +214,9 @@
     const gf = document.getElementById('gateFill');
     const gl = document.getElementById('gateSlotLabel');
     if (gf) gf.style.width = `${(n/MAX)*100}%`;
-    if (gl) gl.textContent = isFull ? 'FULL' : `${MAX-n} slot${MAX-n!==1?'s':''} left`;
+    if (gl) gl.textContent = isFull ? 'FULL' : `${MAX-n} slot${MAX-n!==1?"s":""} left`;
     document.getElementById('fill').style.width = `${(n/MAX)*100}%`;
-    document.getElementById('slotLabel').textContent = isFull ? 'FULL' : `${MAX-n} slot${MAX-n!==1?'s':''} left`;
+    document.getElementById('slotLabel').textContent = isFull ? 'FULL' : `${MAX-n} slot${MAX-n!==1?"s":""} left`;
     document.getElementById('rosterCount').textContent = `${n} / ${MAX}`;
     document.getElementById('fullBanner').style.display = isFull ? 'block' : 'none';
     document.getElementById('submitBtn').disabled = isFull;
@@ -247,7 +250,7 @@
     btn.disabled = true; btn.textContent = 'Saving…';
     try {
       const { data: existing } = await db.from('signups').select('*').order('created_at',{ascending:true});
-      if (existing.length >= MAX) { showMsg('Sorry, all 10 slots are already taken!','error'); render(existing); return; }
+      if (existing.length >= MAX) { showMsg('Sorry, all 20 slots are already taken!','error'); render(existing); return; }
       if (existing.some(s => s.name.toLowerCase()===trimmed.toLowerCase())) { showMsg(`"${esc(trimmed)}" is already on the list!`,'error'); return; }
       const { error } = await db.from('signups').insert([{ name: trimmed }]);
       if (error) throw error;
@@ -283,5 +286,6 @@
     .on('postgres_changes',{event:'*',schema:'public',table:'signups'},load)
     .subscribe();
 </script>
+
 </body>
 </html>
